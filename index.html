@@ -1,0 +1,836 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sparsh Setu | Empowering Rural Communities Through Education & Technology</title>
+  
+  <!-- Primary Meta Tags -->
+  <meta name="description" content="Sparsh Setu is a non-profit NGO dedicated to bridging the digital divide in rural India through computer donations, digital literacy programs, and educational empowerment.">
+  <meta name="keywords" content="NGO, Sparsh Setu, Rural Education, Computer Donation, Digital Literacy, 80G Tax Exemption, Pune NGO, Volunteer India">
+  <meta name="author" content="Sparsh Setu Foundation">
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#f0f7ff',
+              100: '#e0effe',
+              500: '#2563eb',
+              600: '#1d4ed8',
+              700: '#1e40af',
+              800: '#1e3a8a',
+            },
+            hope: {
+              500: '#16a34a',
+              600: '#15803d',
+              700: '#166534',
+            }
+          },
+          fontFamily: {
+            sans: ['Plus Jakarta Sans', 'Inter', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* Custom Scrollbar & Animations */
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: #f1f5f9; }
+    .dark ::-webkit-scrollbar-track { background: #0f172a; }
+    ::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #64748b; }
+    
+    @keyframes pulseGlow {
+      0%, 100% { box-shadow: 0 0 15px rgba(37, 99, 235, 0.4); }
+      50% { box-shadow: 0 0 30px rgba(22, 163, 74, 0.7); }
+    }
+    .pulse-glow { animation: pulseGlow 3s infinite; }
+
+    /* Print Styles for 80G Receipt */
+    @media print {
+      body * { visibility: hidden; }
+      #printable-receipt, #printable-receipt * { visibility: visible; }
+      #printable-receipt { position: absolute; left: 0; top: 0; width: 100%; }
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 dark:bg-slate-900 dark:text-slate-100 font-sans transition-colors duration-300 antialiased selection:bg-brand-500 selection:text-white min-h-screen flex flex-col">
+
+  <!-- Toast Notification -->
+  <div id="toast" class="fixed top-24 right-6 z-50 bg-slate-900 text-white px-5 py-3 rounded-2xl shadow-2xl border border-slate-700 hidden items-center space-x-2 text-xs font-bold animate-bounce">
+    <span>⚡</span>
+    <span id="toast-message">Notification</span>
+  </div>
+
+  <!-- Sticky Navbar -->
+  <header class="sticky top-0 z-40 backdrop-blur-md bg-white/90 dark:bg-slate-900/90 border-b border-slate-200 dark:border-slate-800 transition-colors">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-20">
+        
+        <!-- Logo -->
+        <div class="flex items-center space-x-3 cursor-pointer" onclick="navigateTo('home')">
+          <div class="w-11 h-11 rounded-xl bg-gradient-to-tr from-brand-600 to-hope-500 flex items-center justify-center text-white shadow-lg shadow-brand-500/20 font-black text-xl">
+            S
+          </div>
+          <div>
+            <span class="text-2xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-brand-700 via-brand-600 to-hope-600 dark:from-blue-400 dark:to-emerald-400">
+              Sparsh Setu
+            </span>
+            <span class="block text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-widest">Connecting Hands</span>
+          </div>
+        </div>
+
+        <!-- Desktop Nav Links -->
+        <nav class="hidden lg:flex items-center space-x-1" id="desktop-nav">
+          <!-- Rendered via JS -->
+        </nav>
+
+        <!-- Actions & Buttons -->
+        <div class="hidden md:flex items-center space-x-3">
+          <button onclick="toggleDarkMode()" class="p-2 text-slate-500 hover:text-amber-500 dark:text-slate-400 dark:hover:text-amber-300 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition text-lg" title="Toggle Theme">
+            <span id="theme-icon">🌙</span>
+          </button>
+
+          <div id="auth-status-container">
+            <!-- Rendered via JS -->
+          </div>
+
+          <button onclick="navigateTo('donation')" class="bg-gradient-to-r from-hope-600 to-emerald-500 hover:from-hope-700 hover:to-emerald-600 text-white font-bold text-xs uppercase tracking-wider px-5 py-2.5 rounded-full shadow-md shadow-emerald-500/20 hover:shadow-emerald-500/40 transform hover:-translate-y-0.5 transition">
+            Donate Now
+          </button>
+        </div>
+
+        <!-- Mobile Hamburger Button -->
+        <div class="flex lg:hidden items-center space-x-2">
+          <button onclick="toggleDarkMode()" class="p-2 text-slate-600 dark:text-slate-300">🌙</button>
+          <button onclick="toggleMobileMenu()" class="p-2 rounded-lg text-slate-600 dark:text-slate-300 text-2xl font-bold">☰</button>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Mobile Drawer -->
+    <div id="mobile-menu" class="hidden lg:hidden bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-4 pt-2 pb-6 space-y-2">
+      <div class="grid grid-cols-2 gap-2" id="mobile-nav-links"></div>
+      <div class="pt-4 border-t border-slate-200 dark:border-slate-800 space-y-2" id="mobile-auth-container"></div>
+    </div>
+  </header>
+
+  <!-- Main Dynamic View Container -->
+  <main id="main-content" class="flex-1">
+    <!-- Rendered dynamically by JavaScript -->
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-slate-950 text-slate-400 border-t border-slate-900 pt-16 pb-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+        
+        <div class="space-y-4">
+          <div class="flex items-center space-x-2">
+            <div class="w-9 h-9 rounded-lg bg-brand-600 flex items-center justify-center text-white font-bold">S</div>
+            <span class="text-xl font-extrabold text-white">Sparsh Setu</span>
+          </div>
+          <p class="text-xs leading-relaxed text-slate-400">
+            Empowering rural communities through education, hardware donation drives, and digital literacy. Registered 80G NGO.
+          </p>
+          <div class="text-xs text-slate-500">Reg No: MAH/1289/2018/Pune</div>
+        </div>
+
+        <div>
+          <h4 class="text-white font-bold text-sm uppercase tracking-wider mb-4">Quick Links</h4>
+          <ul class="space-y-2 text-xs font-semibold">
+            <li><button onclick="navigateTo('home')" class="hover:text-white">Home</button></li>
+            <li><button onclick="navigateTo('about')" class="hover:text-white">About Us</button></li>
+            <li><button onclick="navigateTo('projects')" class="hover:text-white">Our Work</button></li>
+            <li><button onclick="navigateTo('impact')" class="hover:text-white">Impact Dashboard</button></li>
+            <li><button onclick="navigateTo('events')" class="hover:text-white">Events</button></li>
+            <li><button onclick="navigateTo('donation')" class="hover:text-white">Donate</button></li>
+            <li><button onclick="navigateTo('volunteer')" class="hover:text-white">Volunteer</button></li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 class="text-white font-bold text-sm uppercase tracking-wider mb-4">Headquarters</h4>
+          <p class="text-xs leading-relaxed">
+            Sparsh Setu Foundation<br />
+            Pimple Gurav, Pune – 411027<br />
+            Maharashtra, India<br /><br />
+            Phone: +91 98765 43210<br />
+            Email: contact@sparshsetu.org
+          </p>
+        </div>
+
+        <div>
+          <h4 class="text-white font-bold text-sm uppercase tracking-wider mb-4">80G Tax Exemption</h4>
+          <p class="text-xs leading-relaxed">
+            All monetary donations are 50% tax deductible under Section 80G of the Indian Income Tax Act.
+          </p>
+          <button onclick="navigateTo('donation')" class="mt-4 w-full py-2.5 bg-brand-600 hover:bg-brand-700 text-white font-bold text-xs uppercase rounded-xl transition">
+            Make a Tax-Saving Donation
+          </button>
+        </div>
+
+      </div>
+
+      <div class="pt-8 border-t border-slate-900 flex flex-col sm:flex-row justify-between items-center text-xs text-slate-500 space-y-4 sm:space-y-0">
+        <p>&copy; 2026 Sparsh Setu Foundation. All rights reserved.</p>
+        <div class="flex space-x-4">
+          <span>Privacy Policy</span>
+          <span>Terms of Service</span>
+          <span>80G Disclosure</span>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Floating WhatsApp & Donate Action Buttons -->
+  <div class="fixed bottom-6 left-6 z-40 flex flex-col space-y-3">
+    <a href="https://wa.me/919876543210?text=Hello%20Sparsh%20Setu%20NGO,%20I%20would%20like%20to%20know%20more" target="_blank" rel="noopener noreferrer" class="w-12 h-12 bg-emerald-500 hover:bg-emerald-600 text-white rounded-full flex items-center justify-center shadow-xl transform hover:scale-110 transition text-2xl" title="Chat on WhatsApp">
+      💬
+    </a>
+    <button onclick="navigateTo('donation')" class="bg-gradient-to-r from-hope-600 to-emerald-500 text-white px-4 py-2.5 rounded-full shadow-2xl font-extrabold text-xs tracking-wider uppercase flex items-center space-x-1.5 transform hover:scale-105 transition">
+      <span>❤️ Donate</span>
+    </button>
+  </div>
+
+  <!-- AI Chatbot ("Sparsh Mitra") Widget -->
+  <div class="fixed bottom-6 right-6 z-40">
+    <button id="chatbot-toggle" onclick="toggleChatbot()" class="bg-gradient-to-r from-brand-600 to-hope-600 text-white p-4 rounded-full shadow-2xl pulse-glow flex items-center space-x-2 font-bold text-xs transform hover:scale-105 transition">
+      <span class="text-2xl">🤖</span>
+      <span class="hidden sm:inline">Chat with Sparsh Mitra</span>
+    </button>
+
+    <div id="chatbot-window" class="hidden bg-white dark:bg-slate-900 rounded-3xl w-80 sm:w-96 shadow-2xl border border-slate-200 dark:border-slate-800 flex flex-col h-[480px] overflow-hidden">
+      <div class="bg-gradient-to-r from-brand-700 to-hope-600 text-white p-4 flex justify-between items-center">
+        <div class="flex items-center space-x-2">
+          <span class="text-2xl">🤖</span>
+          <div>
+            <h4 class="font-bold text-sm">Sparsh Mitra AI</h4>
+            <span class="text-[10px] text-emerald-300 font-semibold">Online • NGO Assistant</span>
+          </div>
+        </div>
+        <button onclick="toggleChatbot()" class="text-white font-bold text-lg">✕</button>
+      </div>
+
+      <div id="chatbot-messages" class="flex-1 p-4 overflow-y-auto space-y-3 text-xs">
+        <div class="flex justify-start">
+          <div class="bg-slate-100 dark:bg-slate-800 p-3 rounded-2xl max-w-[80%]">
+            Namaste! 🙏 I am Sparsh Mitra, your AI guide for Sparsh Setu NGO. How can I help you today?
+          </div>
+        </div>
+      </div>
+
+      <div class="p-3 border-t border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 flex flex-wrap gap-1.5">
+        <button onclick="sendChatMessage('How do I donate?', 'You can make a tax-deductible donation on our Donation page with instant 80G receipt generation!', 'donation')" class="px-2.5 py-1 bg-brand-50 text-brand-700 dark:bg-slate-800 dark:text-brand-300 rounded-full text-[10px] font-bold">
+          How to Donate?
+        </button>
+        <button onclick="sendChatMessage('How to volunteer?', 'Register your skills on our Volunteer page to join computer teaching drives!', 'volunteer')" class="px-2.5 py-1 bg-emerald-50 text-emerald-700 dark:bg-slate-800 dark:text-emerald-300 rounded-full text-[10px] font-bold">
+          Volunteer Info
+        </button>
+        <button onclick="sendChatMessage('80G Tax Benefits?', 'All monetary donations qualify for 50% tax deduction under Section 80G of IT Act.', 'donation')" class="px-2.5 py-1 bg-amber-50 text-amber-700 dark:bg-slate-800 dark:text-amber-300 rounded-full text-[10px] font-bold">
+          80G Tax Benefits
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Auth Modal -->
+  <div id="auth-modal" class="hidden fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm items-center justify-center p-4">
+    <div class="bg-white dark:bg-slate-900 rounded-3xl max-w-md w-full p-8 shadow-2xl border border-slate-200 dark:border-slate-800 relative space-y-6">
+      <button onclick="closeAuthModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 font-bold text-xl">✕</button>
+      <div class="text-center space-y-1">
+        <h3 class="text-2xl font-extrabold text-slate-900 dark:text-white">Portal Sign In</h3>
+        <p class="text-xs text-slate-500">Access Admin, Volunteer, or Donor Portal</p>
+      </div>
+
+      <div class="flex bg-slate-100 dark:bg-slate-800 p-1 rounded-xl">
+        <button onclick="setAuthRole('Admin')" id="role-Admin" class="flex-1 py-2 text-xs font-bold rounded-lg bg-brand-600 text-white">Admin</button>
+        <button onclick="setAuthRole('Volunteer')" id="role-Volunteer" class="flex-1 py-2 text-xs font-bold rounded-lg text-slate-500">Volunteer</button>
+        <button onclick="setAuthRole('Donor')" id="role-Donor" class="flex-1 py-2 text-xs font-bold rounded-lg text-slate-500">Donor</button>
+      </div>
+
+      <form onsubmit="handleAuthSubmit(event)" class="space-y-4">
+        <div>
+          <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Email Address</label>
+          <input type="email" id="auth-email" required value="admin@sparshsetu.org" class="w-full px-4 py-3 rounded-xl border bg-slate-50 dark:bg-slate-900 text-sm" />
+        </div>
+        <div>
+          <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Password</label>
+          <input type="password" id="auth-password" required value="admin123" class="w-full px-4 py-3 rounded-xl border bg-slate-50 dark:bg-slate-900 text-sm" />
+        </div>
+        <button type="submit" class="w-full py-3.5 bg-brand-600 hover:bg-brand-700 text-white font-extrabold text-sm uppercase rounded-xl shadow-lg">
+          Sign In
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Success & 80G Receipt Modal -->
+  <div id="receipt-modal" class="hidden fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm items-center justify-center p-4">
+    <div class="bg-white dark:bg-slate-900 rounded-3xl max-w-2xl w-full p-8 shadow-2xl border border-slate-200 dark:border-slate-800 relative space-y-6">
+      <div class="text-center space-y-2">
+        <div class="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full mx-auto flex items-center justify-center text-3xl font-bold">✓</div>
+        <h3 class="text-2xl font-extrabold text-slate-900 dark:text-white">Donation Successful!</h3>
+        <p class="text-xs text-slate-500">Thank you for empowering rural children. Your 80G tax receipt is ready.</p>
+      </div>
+
+      <div id="printable-receipt" class="bg-slate-50 dark:bg-slate-800 p-6 rounded-2xl border border-slate-200 dark:border-slate-700 space-y-4 text-xs text-slate-700 dark:text-slate-200">
+        <div class="flex justify-between items-center border-b pb-3">
+          <div>
+            <h4 class="font-extrabold text-base text-brand-600">SPARSH SETU FOUNDATION</h4>
+            <p>Pimple Gurav, Pune - 411027 | Regd 80G: AABTS8901EF20214</p>
+          </div>
+          <span class="bg-emerald-100 text-emerald-700 font-bold px-2.5 py-1 rounded">OFFICIAL RECEIPT</span>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4" id="receipt-details-grid"></div>
+
+        <p class="text-[10px] text-slate-400 italic pt-2 border-t">
+          * Eligible for 50% Tax Deduction under Section 80G of Income Tax Act, 1961.
+        </p>
+      </div>
+
+      <div class="flex space-x-3">
+        <button onclick="window.print()" class="flex-1 py-3 bg-brand-600 text-white font-bold rounded-xl text-sm hover:bg-brand-700">
+          Print / Download PDF Receipt
+        </button>
+        <button onclick="closeReceiptModal()" class="px-6 py-3 bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold rounded-xl text-sm">
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- APPLICATION LOGIC IN PURE NATIVE JAVASCRIPT -->
+  <script>
+    // --- STATE MANAGEMENT ---
+    let currentPage = 'home';
+    let isDarkMode = localStorage.getItem('sparsh_theme') === 'dark';
+    let currentUser = JSON.parse(localStorage.getItem('sparsh_user') || 'null');
+    let selectedAuthRole = 'Admin';
+    let selectedDonationAmount = 2500;
+    let selectedPaymentMode = 'UPI';
+
+    const NAV_ITEMS = [
+      { id: 'home', label: 'Home' },
+      { id: 'about', label: 'About Us' },
+      { id: 'projects', label: 'Our Work' },
+      { id: 'gallery', label: 'Gallery' },
+      { id: 'impact', label: 'Impact' },
+      { id: 'events', label: 'Events' },
+      { id: 'donation', label: 'Donate' },
+      { id: 'volunteer', label: 'Volunteer' },
+      { id: 'reports', label: 'Reports' },
+      { id: 'media', label: 'Media' },
+      { id: 'blog', label: 'Blog' },
+      { id: 'contact', label: 'Contact' }
+    ];
+
+    let projects = JSON.parse(localStorage.getItem('sparsh_projects') || 'null') || [
+      {
+        id: 'proj-1',
+        title: 'Rural Computer Lab Initiative',
+        category: 'Computer Donation Drives',
+        location: 'Satara District, Maharashtra',
+        date: 'June 2024',
+        image: 'assets/computer_lab.jpg',
+        description: 'Set up 15 high-speed computer labs across 12 rural high schools, giving students their first hands-on access to modern digital literacy tools and coding courses.',
+        impactStats: '15 Labs • 1,200 Students • 180 Computers Installed'
+      },
+      {
+        id: 'proj-2',
+        title: 'Digital STEM Literacy Drive',
+        category: 'Digital Literacy Programs',
+        location: 'Solapur Region, Maharashtra',
+        date: 'March 2024',
+        image: 'assets/hero.jpg',
+        description: 'Interactive STEM and robotics workshops conducted by expert volunteer educators for Grade 6-10 students in government village schools.',
+        impactStats: '24 Schools • 2,400 STEM Kits • 95% Pass Rate Boost'
+      },
+      {
+        id: 'proj-3',
+        title: 'Community Edu-Tech Center',
+        category: 'School Infrastructure Support',
+        location: 'Pimple Gurav, Pune',
+        date: 'January 2024',
+        image: 'assets/volunteers.jpg',
+        description: 'Established a free evening community learning center equipped with solar power, internet connectivity, and digital study materials for underprivileged youth.',
+        impactStats: 'Daily Access • 3,500 Youth Served • 100% Free'
+      }
+    ];
+
+    let donations = JSON.parse(localStorage.getItem('sparsh_donations') || 'null') || [
+      { id: 'DN-9801', donorName: 'Rahul Verma', amount: 5000, date: '2026-07-20', mode: 'UPI', receiptNo: '80G-2026-9801' },
+      { id: 'DN-9802', donorName: 'Meera Kulkarni', amount: 2500, date: '2026-07-21', mode: 'Razorpay', receiptNo: '80G-2026-9802' },
+      { id: 'DN-9803', donorName: 'Infosys CSR', amount: 50000, date: '2026-07-22', mode: 'Net Banking', receiptNo: '80G-2026-9803' }
+    ];
+
+    // Initialize Theme
+    if (isDarkMode) document.documentElement.classList.add('dark');
+
+    function toggleDarkMode() {
+      isDarkMode = !isDarkMode;
+      if (isDarkMode) {
+        document.documentElement.classList.add('dark');
+        localStorage.setItem('sparsh_theme', 'dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+        localStorage.setItem('sparsh_theme', 'light');
+      }
+      renderHeader();
+    }
+
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      document.getElementById('toast-message').innerText = msg;
+      toast.classList.remove('hidden');
+      toast.classList.add('flex');
+      setTimeout(() => {
+        toast.classList.add('hidden');
+        toast.classList.remove('flex');
+      }, 4000);
+    }
+
+    function navigateTo(pageId) {
+      currentPage = pageId;
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      renderHeader();
+      renderMainContent();
+    }
+
+    function renderHeader() {
+      // Desktop Nav Links
+      const desktopNav = document.getElementById('desktop-nav');
+      desktopNav.innerHTML = NAV_ITEMS.map(item => `
+        <button onclick="navigateTo('${item.id}')" class="px-3 py-2 rounded-lg text-xs font-semibold transition ${
+          currentPage === item.id 
+            ? 'text-brand-600 dark:text-brand-400 bg-brand-50 dark:bg-slate-800/80 shadow-sm' 
+            : 'text-slate-600 dark:text-slate-300 hover:text-brand-600 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800'
+        }">${item.label}</button>
+      `).join('') + (currentUser && currentUser.role === 'Admin' ? `
+        <button onclick="navigateTo('admin')" class="px-3 py-2 rounded-lg text-xs font-bold ${
+          currentPage === 'admin' ? 'bg-amber-500 text-white' : 'text-amber-600 bg-amber-50 dark:bg-amber-950/40 hover:bg-amber-100'
+        }">Admin Panel</button>
+      ` : '');
+
+      // Auth Container
+      const authContainer = document.getElementById('auth-status-container');
+      if (currentUser) {
+        authContainer.innerHTML = `
+          <div class="flex items-center space-x-2 bg-slate-100 dark:bg-slate-800 py-1.5 px-3 rounded-full border border-slate-200 dark:border-slate-700">
+            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
+            <span class="text-xs font-bold text-slate-700 dark:text-slate-200">${currentUser.name} (${currentUser.role})</span>
+            <button onclick="logout()" class="text-xs text-rose-500 hover:text-rose-700 ml-1 font-semibold">Logout</button>
+          </div>
+        `;
+      } else {
+        authContainer.innerHTML = `
+          <button onclick="openAuthModal()" class="text-xs font-bold text-slate-700 dark:text-slate-200 hover:text-brand-600 px-3 py-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+            Login / Portal
+          </button>
+        `;
+      }
+
+      // Mobile Nav Links
+      document.getElementById('mobile-nav-links').innerHTML = NAV_ITEMS.map(item => `
+        <button onclick="navigateTo('${item.id}'); toggleMobileMenu();" class="text-left px-3 py-2 rounded-lg text-sm font-semibold ${
+          currentPage === item.id ? 'bg-brand-500 text-white' : 'text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800'
+        }">${item.label}</button>
+      `).join('');
+    }
+
+    function toggleMobileMenu() {
+      const menu = document.getElementById('mobile-menu');
+      menu.classList.toggle('hidden');
+    }
+
+    // --- AUTH FUNCTIONS ---
+    function openAuthModal() {
+      document.getElementById('auth-modal').classList.remove('hidden');
+      document.getElementById('auth-modal').classList.add('flex');
+    }
+    function closeAuthModal() {
+      document.getElementById('auth-modal').classList.add('hidden');
+      document.getElementById('auth-modal').classList.remove('flex');
+    }
+    function setAuthRole(role) {
+      selectedAuthRole = role;
+      ['Admin', 'Volunteer', 'Donor'].forEach(r => {
+        const btn = document.getElementById(`role-${r}`);
+        if (r === role) {
+          btn.className = "flex-1 py-2 text-xs font-bold rounded-lg bg-brand-600 text-white";
+        } else {
+          btn.className = "flex-1 py-2 text-xs font-bold rounded-lg text-slate-500";
+        }
+      });
+    }
+    function handleAuthSubmit(e) {
+      e.preventDefault();
+      const email = document.getElementById('auth-email').value;
+      currentUser = { name: email.split('@')[0], email, role: selectedAuthRole };
+      localStorage.setItem('sparsh_user', JSON.stringify(currentUser));
+      showToast(`Welcome back, ${currentUser.name}! (${currentUser.role})`);
+      closeAuthModal();
+      renderHeader();
+      if (selectedAuthRole === 'Admin') navigateTo('admin');
+    }
+    function logout() {
+      currentUser = null;
+      localStorage.removeItem('sparsh_user');
+      showToast('Logged out successfully');
+      renderHeader();
+      if (currentPage === 'admin') navigateTo('home');
+    }
+
+    // --- MAIN RENDERER ---
+    function renderMainContent() {
+      const container = document.getElementById('main-content');
+      
+      if (currentPage === 'home') {
+        container.innerHTML = `
+          <div class="space-y-16">
+            <!-- Hero Banner -->
+            <div class="relative min-h-[560px] md:min-h-[640px] flex items-center overflow-hidden bg-slate-950 text-white rounded-b-3xl shadow-2xl">
+              <div class="absolute inset-0 opacity-40">
+                <img src="assets/hero.jpg" alt="Hero" class="w-full h-full object-cover" />
+              </div>
+              <div class="absolute inset-0 bg-gradient-to-r from-slate-950 via-slate-900/80 to-transparent"></div>
+              <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 z-10 space-y-6">
+                <span class="inline-flex items-center px-3.5 py-1.5 rounded-full text-xs font-bold tracking-wider bg-brand-500/20 text-brand-300 border border-brand-500/30 uppercase">
+                  ✨ Registered 80G & 12A Certified NGO
+                </span>
+                <h1 class="text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-tight max-w-4xl">
+                  Empowering Rural Communities Through Education and Technology.
+                </h1>
+                <p class="text-lg sm:text-xl text-slate-300 max-w-2xl font-normal leading-relaxed">
+                  Bridging the digital divide in village schools across Maharashtra and India.
+                </p>
+                <div class="flex flex-wrap gap-4 pt-4">
+                  <button onclick="navigateTo('donation')" class="bg-gradient-to-r from-hope-500 to-emerald-600 hover:from-hope-600 hover:to-emerald-700 text-white font-extrabold px-8 py-4 rounded-xl shadow-xl shadow-hope-600/30 transform hover:-translate-y-1 transition text-base">
+                    Donate Now (Tax Exemption)
+                  </button>
+                  <button onclick="navigateTo('volunteer')" class="bg-white/10 hover:bg-white/20 border border-white/20 backdrop-blur-md text-white font-bold px-7 py-4 rounded-xl transition text-base">
+                    Become a Volunteer
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Stats Bar -->
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              <div class="bg-white dark:bg-slate-800 rounded-2xl p-8 shadow-xl border border-slate-200/80 dark:border-slate-700 grid grid-cols-2 md:grid-cols-4 gap-8">
+                <div class="text-center space-y-1">
+                  <div class="text-3xl sm:text-4xl font-extrabold text-brand-600 dark:text-brand-400">120+</div>
+                  <div class="text-xs font-bold uppercase tracking-wider text-slate-500">Schools Supported</div>
+                </div>
+                <div class="text-center space-y-1">
+                  <div class="text-3xl sm:text-4xl font-extrabold text-hope-600 dark:text-emerald-400">45,000+</div>
+                  <div class="text-xs font-bold uppercase tracking-wider text-slate-500">Children Benefited</div>
+                </div>
+                <div class="text-center space-y-1">
+                  <div class="text-3xl sm:text-4xl font-extrabold text-amber-500">3,500+</div>
+                  <div class="text-xs font-bold uppercase tracking-wider text-slate-500">Computers Donated</div>
+                </div>
+                <div class="text-center space-y-1">
+                  <div class="text-3xl sm:text-4xl font-extrabold text-purple-600">1,200+</div>
+                  <div class="text-xs font-bold uppercase tracking-wider text-slate-500">Active Volunteers</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Core Projects Grid -->
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
+              <div class="flex justify-between items-end">
+                <div>
+                  <span class="text-xs font-extrabold uppercase tracking-widest text-brand-600">Our Core Initiatives</span>
+                  <h2 class="text-3xl font-extrabold text-slate-900 dark:text-white mt-1">Transforming Lives Across Rural India</h2>
+                </div>
+                <button onclick="navigateTo('projects')" class="text-sm font-bold text-brand-600 hover:underline">View All Projects &rarr;</button>
+              </div>
+
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                ${projects.slice(0, 3).map(p => `
+                  <div class="bg-white dark:bg-slate-800 rounded-2xl overflow-hidden shadow-lg border border-slate-200 dark:border-slate-700 flex flex-col">
+                    <img src="${p.image}" alt="${p.title}" class="h-48 w-full object-cover" />
+                    <div class="p-6 flex-1 flex flex-col justify-between space-y-4">
+                      <div>
+                        <span class="bg-brand-50 text-brand-600 text-[10px] font-bold px-2.5 py-1 rounded-md uppercase mb-2 inline-block">${p.category}</span>
+                        <h3 class="text-xl font-bold text-slate-900 dark:text-white">${p.title}</h3>
+                        <p class="text-xs text-slate-500 mt-1 font-semibold">📍 ${p.location} • ${p.date}</p>
+                        <p class="text-sm text-slate-600 dark:text-slate-300 mt-3">${p.description}</p>
+                      </div>
+                      <div class="pt-4 border-t border-slate-100 dark:border-slate-700 text-xs font-extrabold text-hope-600">${p.impactStats}</div>
+                    </div>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+
+          </div>
+        `;
+      } else if (currentPage === 'donation') {
+        container.innerHTML = `
+          <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-12">
+            <div class="bg-gradient-to-br from-brand-900 via-brand-800 to-slate-900 rounded-3xl p-8 md:p-12 text-white shadow-2xl space-y-6">
+              <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                <div>
+                  <span class="inline-block bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-xs font-extrabold uppercase px-3 py-1 rounded-full mb-2">
+                    50% Tax Exemption under Sec 80G
+                  </span>
+                  <h1 class="text-3xl sm:text-5xl font-extrabold">Annual Rural Digital Drive</h1>
+                  <p class="text-slate-300 text-sm mt-1">Help us reach 200 high schools with brand new computer labs this year.</p>
+                </div>
+                <div class="text-right bg-white/10 backdrop-blur-md p-4 rounded-2xl border border-white/10">
+                  <div class="text-xs uppercase text-slate-300 font-bold">Total Raised</div>
+                  <div class="text-3xl font-extrabold text-emerald-400">₹48,50,000</div>
+                  <div class="text-xs text-slate-400">Goal: ₹60,00,000</div>
+                </div>
+              </div>
+
+              <div class="space-y-2">
+                <div class="flex justify-between text-xs font-bold">
+                  <span>80.8% Funded</span>
+                  <span>3,420 Donors</span>
+                </div>
+                <div class="w-full h-4 bg-slate-800 rounded-full overflow-hidden p-0.5 border border-white/10">
+                  <div class="h-full bg-gradient-to-r from-hope-500 to-emerald-400 rounded-full w-[80.8%]"></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+              <div class="lg:col-span-7 bg-white dark:bg-slate-800 rounded-3xl p-8 border border-slate-200 dark:border-slate-700 shadow-xl space-y-6">
+                <div class="space-y-2">
+                  <label class="block text-xs font-bold uppercase text-slate-500">Select Donation Amount</label>
+                  <div class="grid grid-cols-4 gap-3">
+                    <button onclick="setDonationAmt(500)" class="py-3.5 rounded-xl font-extrabold text-sm border bg-slate-50 dark:bg-slate-900 border-slate-200 dark:border-slate-700 text-slate-800 dark:text-white">₹500</button>
+                    <button onclick="setDonationAmt(1000)" class="py-3.5 rounded-xl font-extrabold text-sm border bg-slate-50 dark:bg-slate-900 border-slate-200 dark:border-slate-700 text-slate-800 dark:text-white">₹1000</button>
+                    <button onclick="setDonationAmt(2500)" class="py-3.5 rounded-xl font-extrabold text-sm border bg-brand-600 text-white border-brand-600">₹2500</button>
+                    <button onclick="setDonationAmt(5000)" class="py-3.5 rounded-xl font-extrabold text-sm border bg-slate-50 dark:bg-slate-900 border-slate-200 dark:border-slate-700 text-slate-800 dark:text-white">₹5000</button>
+                  </div>
+                </div>
+
+                <div class="p-4 bg-emerald-50 dark:bg-emerald-950/40 rounded-2xl border border-emerald-200 text-emerald-900 dark:text-emerald-300 text-sm font-semibold">
+                  💡 Supplies a digital learning tablet & software license for 1 village child.
+                </div>
+
+                <form onsubmit="handleDonationSubmit(event)" class="space-y-4">
+                  <div>
+                    <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Full Name (For 80G Tax Receipt) *</label>
+                    <input type="text" id="donor-name" required placeholder="e.g. Ramesh Kumar" class="w-full px-4 py-3 rounded-xl border bg-slate-50 dark:bg-slate-900 text-sm" />
+                  </div>
+                  <div class="grid grid-cols-2 gap-4">
+                    <div>
+                      <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Email *</label>
+                      <input type="email" id="donor-email" required placeholder="ramesh@example.com" class="w-full px-4 py-3 rounded-xl border bg-slate-50 dark:bg-slate-900 text-sm" />
+                    </div>
+                    <div>
+                      <label class="block text-xs font-bold uppercase text-slate-500 mb-1">PAN Card (Optional)</label>
+                      <input type="text" id="donor-pan" placeholder="ABCDE1234F" class="w-full px-4 py-3 rounded-xl border bg-slate-50 dark:bg-slate-900 text-sm uppercase" />
+                    </div>
+                  </div>
+                  <button type="submit" class="w-full py-4 bg-gradient-to-r from-hope-600 to-emerald-500 text-white font-extrabold text-base uppercase rounded-2xl shadow-xl">
+                    Proceed to Pay & Get 80G Receipt
+                  </button>
+                </form>
+              </div>
+
+              <div class="lg:col-span-5 bg-white dark:bg-slate-800 rounded-3xl p-6 border border-slate-200 dark:border-slate-700 shadow-xl text-center space-y-4">
+                <div class="inline-block bg-brand-50 text-brand-600 font-bold text-xs px-3 py-1 rounded-full uppercase">
+                  Scan to Pay via any UPI App
+                </div>
+                <div class="w-48 h-48 mx-auto bg-slate-100 dark:bg-slate-900 rounded-2xl p-4 flex items-center justify-center border-2 border-dashed border-brand-500/40">
+                  <img id="upi-qr-img" src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=upi://pay?pa=sparshsetu@upi%26pn=Sparsh%20Setu%20NGO%26am=2500" alt="UPI QR" class="w-full h-full object-contain" />
+                </div>
+                <div class="text-xs font-bold text-slate-600 dark:text-slate-300">
+                  UPI ID: <span class="text-brand-600 select-all">sparshsetu@upi</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+      } else if (currentPage === 'about') {
+        container.innerHTML = `
+          <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-12">
+            <div class="text-center max-w-3xl mx-auto space-y-4">
+              <span class="text-xs font-extrabold uppercase tracking-widest text-brand-600">About Sparsh Setu</span>
+              <h1 class="text-4xl font-extrabold text-slate-900 dark:text-white">Connecting Hands, Touching Lives</h1>
+              <p class="text-slate-600 dark:text-slate-300 text-base leading-relaxed">
+                Founded in 2018 in Pimple Gurav, Pune, Sparsh Setu is dedicated to empowering underserved rural children through computer access, digital literacy bootcamps, and educational infrastructure.
+              </p>
+            </div>
+          </div>
+        `;
+      } else if (currentPage === 'projects') {
+        container.innerHTML = `
+          <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-8">
+            <div class="text-center max-w-3xl mx-auto space-y-3">
+              <span class="text-xs font-extrabold uppercase tracking-widest text-brand-600">Our Work</span>
+              <h1 class="text-4xl font-extrabold text-slate-900 dark:text-white">Empowerment Projects in Action</h1>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+              ${projects.map(p => `
+                <div class="bg-white dark:bg-slate-800 rounded-2xl overflow-hidden shadow-lg border border-slate-200 dark:border-slate-700 flex flex-col">
+                  <img src="${p.image}" alt="${p.title}" class="h-48 w-full object-cover" />
+                  <div class="p-6 flex-1 flex flex-col justify-between space-y-4">
+                    <div>
+                      <span class="bg-brand-50 text-brand-600 text-[10px] font-bold px-2.5 py-1 rounded-md uppercase mb-2 inline-block">${p.category}</span>
+                      <h3 class="text-xl font-bold text-slate-900 dark:text-white">${p.title}</h3>
+                      <p class="text-xs text-slate-500 mt-1 font-semibold">📍 ${p.location} • ${p.date}</p>
+                      <p class="text-sm text-slate-600 dark:text-slate-300 mt-3">${p.description}</p>
+                    </div>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        `;
+      } else if (currentPage === 'impact') {
+        container.innerHTML = `
+          <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-8">
+            <h1 class="text-4xl font-extrabold text-slate-900 dark:text-white text-center">Impact Dashboard</h1>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+              <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl border text-center font-bold">💰 ₹48.5L+ Raised</div>
+              <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl border text-center font-bold">💻 3,500+ Computers</div>
+              <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl border text-center font-bold">🎓 45,000+ Students</div>
+              <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl border text-center font-bold">🏫 140+ Schools</div>
+            </div>
+          </div>
+        `;
+      } else if (currentPage === 'contact') {
+        container.innerHTML = `
+          <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-8">
+            <h1 class="text-4xl font-extrabold text-slate-900 dark:text-white text-center">Contact Sparsh Setu</h1>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 bg-white dark:bg-slate-800 p-8 rounded-3xl border shadow-xl">
+              <div>
+                <h3 class="text-xl font-bold">Headquarters</h3>
+                <p class="mt-2 text-sm">Sparsh Setu Foundation, Pimple Gurav, Pune – 411027, Maharashtra, India</p>
+                <p class="mt-2 text-sm">Phone: +91 98765 43210</p>
+                <p class="text-sm">Email: contact@sparshsetu.org</p>
+              </div>
+              <iframe title="Map" src="https://maps.google.com/maps?q=Pimple%20Gurav,%20Pune&t=&z=13&ie=UTF8&iwloc=&output=embed" class="w-full h-48 rounded-xl border-0"></iframe>
+            </div>
+          </div>
+        `;
+      } else if (currentPage === 'admin') {
+        if (!currentUser || currentUser.role !== 'Admin') {
+          container.innerHTML = `
+            <div class="max-w-md mx-auto my-20 p-8 bg-white dark:bg-slate-800 rounded-3xl border text-center space-y-4 shadow-2xl">
+              <div class="text-4xl">🔒</div>
+              <h2 class="text-2xl font-extrabold text-slate-900 dark:text-white">Admin Portal Restricted</h2>
+              <p class="text-xs text-slate-500">Please login with Admin credentials to access content management.</p>
+            </div>
+          `;
+        } else {
+          container.innerHTML = `
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-8">
+              <div class="bg-amber-500 text-slate-950 p-6 rounded-3xl flex justify-between items-center">
+                <h1 class="text-2xl font-extrabold">Admin Staff Operations Portal</h1>
+                <span class="text-xs font-bold bg-slate-950 text-white px-3 py-1.5 rounded-lg">Logged in: ${currentUser.name}</span>
+              </div>
+              <div class="bg-white dark:bg-slate-800 p-8 rounded-3xl border shadow-xl">
+                <h3 class="text-lg font-bold">Recent Incoming Donations</h3>
+                <table class="w-full text-left text-xs mt-4">
+                  <thead>
+                    <tr class="border-b font-bold uppercase text-slate-400">
+                      <th class="py-2">Receipt No</th><th>Donor</th><th>Amount</th><th>Date</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    ${donations.map(d => `
+                      <tr class="border-b py-2">
+                        <td class="py-2 font-bold text-brand-600">${d.receiptNo}</td>
+                        <td>${d.donorName}</td>
+                        <td class="font-bold text-emerald-500">₹${d.amount}</td>
+                        <td>${d.date}</td>
+                      </tr>
+                    `).join('')}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          `;
+        }
+      } else {
+        container.innerHTML = `
+          <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 text-center space-y-4">
+            <h1 class="text-3xl font-extrabold text-slate-900 dark:text-white capitalize">${currentPage} Page</h1>
+            <p class="text-slate-500 text-sm">Welcome to the ${currentPage} section of Sparsh Setu NGO.</p>
+            <button onclick="navigateTo('home')" class="px-6 py-2.5 bg-brand-600 text-white font-bold text-xs rounded-xl">Return Home</button>
+          </div>
+        `;
+      }
+    }
+
+    // --- DONATION LOGIC ---
+    function setDonationAmt(amt) {
+      selectedDonationAmount = amt;
+      document.getElementById('upi-qr-img').src = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=upi://pay?pa=sparshsetu@upi%26pn=Sparsh%20Setu%20NGO%26am=${amt}`;
+    }
+
+    function handleDonationSubmit(e) {
+      e.preventDefault();
+      const name = document.getElementById('donor-name').value;
+      const email = document.getElementById('donor-email').value;
+      const pan = document.getElementById('donor-pan').value || 'NOT-PROVIDED';
+      const receiptNo = '80G-2026-' + Math.floor(100000 + Math.random() * 900000);
+      const date = new Date().toISOString().split('T')[0];
+
+      const newDonation = { id: 'DN-' + Date.now(), donorName: name, amount: selectedDonationAmount, date, mode: 'UPI', receiptNo };
+      donations.unshift(newDonation);
+      localStorage.setItem('sparsh_donations', JSON.stringify(donations));
+
+      document.getElementById('receipt-details-grid').innerHTML = `
+        <div><strong>Receipt No:</strong> ${receiptNo}</div>
+        <div><strong>Date:</strong> ${date}</div>
+        <div><strong>Donor Name:</strong> ${name}</div>
+        <div><strong>PAN Card:</strong> ${pan}</div>
+        <div><strong>Amount Paid:</strong> ₹${selectedDonationAmount}</div>
+        <div><strong>Payment Mode:</strong> UPI</div>
+      `;
+
+      showToast('Donation successful! 80G Receipt generated.');
+      document.getElementById('receipt-modal').classList.remove('hidden');
+      document.getElementById('receipt-modal').classList.add('flex');
+    }
+
+    function closeReceiptModal() {
+      document.getElementById('receipt-modal').classList.add('hidden');
+      document.getElementById('receipt-modal').classList.remove('flex');
+    }
+
+    // --- CHATBOT FUNCTIONS ---
+    function toggleChatbot() {
+      document.getElementById('chatbot-window').classList.toggle('hidden');
+    }
+
+    function sendChatMessage(userText, botReply, pageTarget) {
+      const messagesContainer = document.getElementById('chatbot-messages');
+      messagesContainer.innerHTML += `
+        <div class="flex justify-end"><div class="bg-brand-600 text-white p-3 rounded-2xl max-w-[80%]">${userText}</div></div>
+        <div class="flex justify-start"><div class="bg-slate-100 dark:bg-slate-800 p-3 rounded-2xl max-w-[80%]">${botReply}</div></div>
+      `;
+      messagesContainer.scrollTop = messagesContainer.scrollHeight;
+      if (pageTarget) navigateTo(pageTarget);
+    }
+
+    // INITIAL LAUNCH
+    renderHeader();
+    renderMainContent();
+  </script>
+</body>
+</html>
