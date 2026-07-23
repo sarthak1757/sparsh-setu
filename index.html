@@ -30,6 +30,7 @@
               600: '#1d4ed8',
               700: '#1e40af',
               800: '#1e3a8a',
+              900: '#172554',
             },
             hope: {
               500: '#16a34a',
@@ -199,7 +200,7 @@
 
   <!-- Floating WhatsApp & Donate Action Buttons -->
   <div class="fixed bottom-6 left-6 z-40 flex flex-col space-y-3">
-    <a href="https://wa.me/919876543210?text=Hello%20Sparsh%20Setu%20NGO,%20I%20would%20like%20to%20know%20more" target="_blank" rel="noopener noreferrer" class="w-12 h-12 bg-emerald-500 hover:bg-emerald-600 text-white rounded-full flex items-center justify-center shadow-xl transform hover:scale-110 transition text-2xl" title="Chat on WhatsApp">
+    <a href="https://wa.me/917620040230?text=Hello%20Sparsh%20Setu%20NGO,%20I%20would%20like%20to%20know%20more" target="_blank" rel="noopener noreferrer" class="w-12 h-12 bg-emerald-500 hover:bg-emerald-600 text-white rounded-full flex items-center justify-center shadow-xl transform hover:scale-110 transition text-2xl" title="Chat on WhatsApp">
       💬
     </a>
     <button onclick="navigateTo('donation')" class="bg-gradient-to-r from-hope-600 to-emerald-500 text-white px-4 py-2.5 rounded-full shadow-2xl font-extrabold text-xs tracking-wider uppercase flex items-center space-x-1.5 transform hover:scale-105 transition">
@@ -446,11 +447,20 @@
       }
 
       // Mobile Nav Links
-      document.getElementById('mobile-nav-links').innerHTML = NAV_ITEMS.map(item => `
+      let mobileHtml = NAV_ITEMS.map(item => `
         <button onclick="navigateTo('${item.id}'); toggleMobileMenu();" class="text-left px-3 py-2 rounded-lg text-sm font-semibold ${
           currentPage === item.id ? 'bg-brand-500 text-white' : 'text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800'
         }">${item.label}</button>
       `).join('');
+
+      if (currentUser && currentUser.role === 'Admin') {
+        mobileHtml += `
+          <button onclick="navigateTo('admin'); toggleMobileMenu();" class="text-left px-3 py-2 rounded-lg text-sm font-bold text-amber-600 bg-amber-50 dark:bg-amber-950/40 hover:bg-amber-100 col-span-2">
+            Admin Panel
+          </button>
+        `;
+      }
+      document.getElementById('mobile-nav-links').innerHTML = mobileHtml;
     }
 
     function toggleMobileMenu() {

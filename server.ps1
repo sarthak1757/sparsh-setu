@@ -15,7 +15,7 @@ while ($listener.IsListening) {
         $path = $request.Url.LocalPath
         if ($path -eq '/') { $path = '/index.html' }
         
-        $filePath = Join-Path 'C:\Users\Archit\.gemini\antigravity\scratch\sparsh-setu' $path.TrimStart('/')
+        $filePath = Join-Path $PSScriptRoot $path.TrimStart('/')
         
         if (Test-Path $filePath -PathType Leaf) {
             $bytes = [System.IO.File]::ReadAllBytes($filePath)
